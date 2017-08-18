@@ -1,9 +1,14 @@
 package servlet;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,13 +21,13 @@ public class ServletDemo extends HttpServlet{
 	
 	@Override
 	public void destroy() {
-		System.out.println("servletÏú»Ù");
+		System.out.println("servleté”€æ¯");
 		super.destroy();
 	}
 
 	@Override
 	public void init() throws ServletException {
-		System.out.println("servlet³õÊ¼»¯");
+		System.out.println("servletåˆå§‹åŒ–");
 		super.init();
 	}
 
@@ -42,32 +47,54 @@ public class ServletDemo extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//streamWrite(response);
 		
-		printWrite(response);
+		//printWrite(response);
+		
+		//downloadFile(response);
 	}
 
-	//Ê¹ÓÃprintWriterÁ÷Êä³ö
+	//ä¸‹è½½æ–‡ä»¶ï¼Œæ³¨æ„ä½¿ç”¨å­—èŠ‚æµè€Œä¸æ˜¯å­—ç¬¦æµ
+	private void downloadFile(HttpServletResponse response)
+			throws UnsupportedEncodingException, FileNotFoundException, IOException {
+		//è·å–è¦ä¸‹è½½çš„æ–‡ä»¶
+		String realPath = this.getServletContext().getRealPath("/static/songsong.jpg");	//è·å–æ–‡ä»¶çš„ç»å¯¹è·¯å¾„
+		String fileName = realPath.substring(realPath.lastIndexOf("\\") + 1); //è·å–æ–‡ä»¶çš„æ–‡ä»¶å
+		
+		//è®¾ç½®content-dispositionå“åº”å¤´æ§åˆ¶æµè§ˆå™¨ä»¥ä¸‹è½½çš„å½¢å¼æ‰“å¼€æ–‡ä»¶ï¼Œä¸­æ–‡æ–‡ä»¶åè¦ä½¿ç”¨URLEncoder.encodeæ–¹æ³•è¿›è¡Œç¼–ç 
+		response.setHeader("content-disposition", "attachment; filename=" + URLEncoder.encode(fileName, "utf-8"));
+		
+		InputStream in = new FileInputStream(realPath);
+		int len = 0;
+		byte[] arr = new byte[1024];
+		OutputStream out = response.getOutputStream();
+		while ((len = in.read(arr)) > 0) {
+			out.write(arr, 0, len);
+		}
+		in.close();
+	}
+
+	//ä½¿ç”¨printWriteræµè¾“å‡º
 	private void printWrite(HttpServletResponse response) throws IOException {
-		//Í¨¹ıÉèÖÃÏìÓ¦Í·£¬¿ØÖÆä¯ÀÀÆ÷µÄ±àÂë·½Ê½
+		//é€šè¿‡è®¾ç½®å“åº”å¤´ï¼Œæ§åˆ¶æµè§ˆå™¨çš„ç¼–ç æ–¹å¼
 		response.setHeader("content-type", "text/html; charset=UTF-8");
 		
-		String data = "Ã÷³õ£¬¼ÓÓÍ°É£¡";
-	/*	ÔÚ»ñÈ¡PrintWriterÊä³öÁ÷Ö®Ç°Ê×ÏÈÊ¹ÓÃ"response.setCharacterEncoding(charset)"
-		ÉèÖÃ×Ö·ûÒÔÊ²Ã´ÑùµÄ±àÂëÊä³öµ½ä¯ÀÀÆ÷£¬Èç£ºresponse.setCharacterEncoding("UTF-8");
-		ÉèÖÃ½«×Ö·ûÒÔ"UTF-8"±àÂëÊä³öµ½¿Í»§¶Ëä¯ÀÀÆ÷£¬È»ºóÔÙÊ¹ÓÃresponse.getWriter();
-		»ñÈ¡PrintWriterÊä³öÁ÷£¬ÕâÁ½¸ö²½Öè²»ÄÜµßµ¹ 		*/
-		response.setCharacterEncoding("UTF-8");	//ÉèÖÃ×Ö·ûÒÔutf-8µÄ±àÂëÊä³öµ½ä¯ÀÀÆ÷
+		String data = "æ˜åˆï¼ŒåŠ æ²¹å§ï¼";
+	/*	åœ¨è·å–PrintWriterè¾“å‡ºæµä¹‹å‰é¦–å…ˆä½¿ç”¨"response.setCharacterEncoding(charset)"
+		è®¾ç½®å­—ç¬¦ä»¥ä»€ä¹ˆæ ·çš„ç¼–ç è¾“å‡ºåˆ°æµè§ˆå™¨ï¼Œå¦‚ï¼šresponse.setCharacterEncoding("UTF-8");
+		è®¾ç½®å°†å­—ç¬¦ä»¥"UTF-8"ç¼–ç è¾“å‡ºåˆ°å®¢æˆ·ç«¯æµè§ˆå™¨ï¼Œç„¶åå†ä½¿ç”¨response.getWriter();
+		è·å–PrintWriterè¾“å‡ºæµï¼Œè¿™ä¸¤ä¸ªæ­¥éª¤ä¸èƒ½é¢ å€’ 		*/
+		response.setCharacterEncoding("UTF-8");	//è®¾ç½®å­—ç¬¦ä»¥utf-8çš„ç¼–ç è¾“å‡ºåˆ°æµè§ˆå™¨
 		PrintWriter writer = response.getWriter();
 		writer.write(data);
 	}
 
-	//Ê¹ÓÃOutputStreamÁ÷Êä³ö
+	//ä½¿ç”¨OutputStreamæµè¾“å‡º
 	private void streamWrite(HttpServletResponse response) throws IOException, UnsupportedEncodingException {
-		//Í¨¹ıÉèÖÃÏìÓ¦Í·£¬¿ØÖÆä¯ÀÀÆ÷µÄ±àÂë·½Ê½
+		//é€šè¿‡è®¾ç½®å“åº”å¤´ï¼Œæ§åˆ¶æµè§ˆå™¨çš„ç¼–ç æ–¹å¼
 		response.setHeader("content-type", "text/html; charset=UTF-8");
 		
-		String a = "×ÔÂÉ¸øÈË×ÔÓÉ";
+		String a = "è‡ªå¾‹ç»™äººè‡ªç”±";
 		OutputStream out = response.getOutputStream();
-		out.write(a.getBytes("UTF-8")); //Ê¹ÓÃoutputStreamÁ÷Ïòä¯ÀÀÆ÷Êä³ö×Ö½ÚÊı×é
+		out.write(a.getBytes("UTF-8")); //ä½¿ç”¨outputStreamæµå‘æµè§ˆå™¨è¾“å‡ºå­—èŠ‚æ•°ç»„
 	}
 
 
