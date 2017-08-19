@@ -8,6 +8,12 @@
 		<welcome-file>./portal/index.jsp</welcome-file>
 	</welcome-file-list>
 	
+	<!-- 404处理页面 -->
+	<error-page>
+		<error-code>404</error-code>
+		<location>/portal/error.jsp</location>
+	</error-page>
+	
 	<servlet>
 		<description>This is demo for servlet</description>
 		<display-name>This is demo for servlet</display-name>
