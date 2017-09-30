@@ -36,4 +36,23 @@
 		<url-pattern>/login</url-pattern>
 	</servlet-mapping>
 	
+	<!-- 过滤器，转码 -->
+	<filter>
+		<description>encode_filter</description>
+		<filter-name>encodeFilter</filter-name>
+		<filter-class>servlet.LoginFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>encodeFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	
+	<!-- 监听器request -->
+	<listener>
+		<description>request_listener</description>
+		<listener-class>servlet.MyServletRequestListener</listener-class>
+	</listener>
+	
 </web-app>
